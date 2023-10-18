@@ -15,20 +15,6 @@ export default {
 			return new Response('Unauthorized', { status: 401 });
 		}
 
-		// Access country flag from R2
-		const url = new URL(request.url);
-    const path = url.pathname;
-		if (path.startsWith('/secure/')) {
-
-      const assetResponse = await env.MY_COUNTRY_BUCKET.get(`${country}.png`);
-
-      if (!assetResponse.ok) {
-        return new Response('Asset not found', { status: 404 });
-      }
-
-      return new Response(assetResponse.body, { headers: { 'Content-Type': 'image/png' } });
-    }
-
 		// Split the JWT into its parts
 		const jwtParts = jwt.split('.');
 		const headerBase64Url = jwtParts[0];
@@ -41,6 +27,21 @@ export default {
 		
 		const email = payload.email;
   	const country = payload.country;
+
+		// Access country flag from R2
+		const url = new URL(request.url);
+		const path = url.pathname;
+		
+		if (path.startsWith('/secure/')) {
+			const countryLowerCase = country.toLowerCase();
+			console.log(`Fetching country flag for ${countryLowerCase}`);
+
+			const assetResponse = await env.MY_COUNTRY_BUCKET.get(`${countryLowerCase}.png`);
+			if (assetResponse === null) {
+				return new Response('Country Flag Not Found', { status: 404 });
+			}
+			return new Response(assetResponse.body, { headers: { 'Content-Type': 'image/png' } });
+		}
 
 		const timestamp = payload.iat || payload.auth_time;
 		const date = new Date(timestamp * 1000).toISOString(); // Convert from seconds to milliseconds

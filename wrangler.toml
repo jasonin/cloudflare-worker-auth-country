@@ -2,6 +2,9 @@ name = "green-bread-d097"
 main = "src/index.js"
 compatibility_date = "2023-10-16"
 
+account_id = "f99d0289021202294090c5e8ef7b31af"
+workers_dev = true
+
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
